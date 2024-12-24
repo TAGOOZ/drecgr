@@ -26,18 +26,34 @@ class_names = ["arrhythmia", "normal"]
 
 # Title and instructions
 st.title("ECG Beat Classification")
-st.write("Upload an ECG beat image, and the model will classify it as either **Normal** or **Arrhythmia**.")
+st.write("Upload an ECG beat image, or use the camera to take a photo. The model will classify it as either **Normal** or **Arrhythmia**.")
 
-# File uploader
+# File uploader for image upload
 uploaded_file = st.file_uploader("Choose an ECG image file", type=["png", "jpg", "jpeg"])
 
+# Button to trigger the camera input
+if st.button('Capture Image from Camera'):
+    camera_image = st.camera_input("Capture image from camera")
+
+# Initialize image to None
+image = None
+
+# Handle file upload
 if uploaded_file is not None:
-    # Load and preprocess the image
     image = Image.open(uploaded_file).convert("RGB")
+
+# Handle camera input
+if 'camera_image' in locals() and camera_image is not None:
+    # Convert the camera input image to PIL format
+    image = Image.open(camera_image).convert("RGB")
+
+# Process the image and run prediction if an image is provided
+if image is not None:
+    # Display the image
+    st.image(image, caption="Uploaded/Captured Image", use_column_width=True)
+
+    # Preprocess the image
     input_tensor = transform(image).unsqueeze(0)  # Add batch dimension
-    
-    # Display the uploaded image
-    st.image(image, caption="Uploaded Image", use_column_width=True)
     
     # Load the model
     model = load_model()
@@ -51,11 +67,11 @@ if uploaded_file is not None:
     # Display prediction and confidence
     predicted_class = class_names[predicted.item()]
     confidence_score = confidence.item() * 100
-    
-
     st.write(f"### Prediction: **{predicted_class}**")
     st.write(f"### Confidence: **{confidence_score:.2f}%**")
-    if class_names[predicted.item()] == "Arrhythmia":  # "Arrhythmia" needs quotes
+
+    # Provide medical advice based on the prediction
+    if predicted_class == "arrhythmia":
         st.write(f"### You should visit a doctor")
     else:
         st.write(f"### بطل دلع يا راجل صحتك زي الحصان")
