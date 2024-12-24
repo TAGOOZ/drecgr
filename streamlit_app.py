@@ -31,9 +31,8 @@ st.write("Upload an ECG beat image, or use the camera to take a photo. The model
 # File uploader for image upload
 uploaded_file = st.file_uploader("Choose an ECG image file", type=["png", "jpg", "jpeg"])
 
-# Button to trigger the camera input
-if st.button('Capture Image from Camera'):
-    camera_image = st.camera_input("Capture image from camera")
+# Camera input for capturing an image
+camera_image = st.camera_input("Capture image from camera")
 
 # Initialize image to None
 image = None
@@ -43,7 +42,7 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file).convert("RGB")
 
 # Handle camera input
-if 'camera_image' in locals() and camera_image is not None:
+if camera_image is not None:
     # Convert the camera input image to PIL format
     image = Image.open(camera_image).convert("RGB")
 
