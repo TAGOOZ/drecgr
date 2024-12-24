@@ -51,6 +51,11 @@ if uploaded_file is not None:
     # Display prediction and confidence
     predicted_class = class_names[predicted.item()]
     confidence_score = confidence.item() * 100
+    
 
     st.write(f"### Prediction: **{predicted_class}**")
     st.write(f"### Confidence: **{confidence_score:.2f}%**")
+    if class_names[predicted.item()] == "Arrhythmia":  # "Arrhythmia" needs quotes
+        st.write(f"### You should visit a doctor")
+    else:
+        st.write(f"### بطل دلع يا راجل صحتك زي الحصان")
