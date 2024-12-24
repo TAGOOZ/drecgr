@@ -26,7 +26,7 @@ class_names = ["arrhythmia", "normal"]
 
 # Title and instructions
 st.title("ECG Beat Classification")
-st.write("Upload an ECG beat image or use the camera to take a photo, crop it, and then the model will classify it as either **Normal** or **Arrhythmia**.")
+st.write("Upload an ECG beat image, or use the camera to take a photo. The model will classify it as either **Normal** or **Arrhythmia**.")
 
 # File uploader for image upload
 uploaded_file = st.file_uploader("Choose an ECG image file", type=["png", "jpg", "jpeg"])
@@ -37,34 +37,26 @@ camera_image = st.camera_input("Capture image from camera")
 # Initialize image to None
 image = None
 
+# Handle file upload
 if uploaded_file is not None:
     image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption="Uploaded Image", use_column_width=True)
 
-elif camera_image is not None:
+# Handle camera input
+if camera_image is not None:
     # Convert the camera input image to PIL format
     image = Image.open(camera_image).convert("RGB")
-    st.image(image, caption="Captured Image", use_column_width=True)
 
-# Option to crop image
+# Process the image and run prediction if an image is provided
 if image is not None:
-    st.write("Crop the image")
-    left = st.slider("Left", 0, image.width, 0)
-    upper = st.slider("Upper", 0, image.height, 0)
-    right = st.slider("Right", 0, image.width, image.width)
-    lower = st.slider("Lower", 0, image.height, image.height)
-    if st.button("Crop Image"):
-        image = image.crop((left, upper, right, lower))
-        st.image(image, caption="Cropped Image", use_column_width=True)
+    # Display the image
+    st.image(image, caption="Uploaded/Captured Image", use_column_width=True)
 
-# After cropping, submit for classification
-if image is not None and st.button("Classify Image"):
     # Preprocess the image
     input_tensor = transform(image).unsqueeze(0)  # Add batch dimension
-
+    
     # Load the model
     model = load_model()
-
+    
     # Make prediction
     with torch.no_grad():
         outputs = model(input_tensor)
